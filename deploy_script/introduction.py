@@ -8,7 +8,7 @@
 
 # ## <ins>Introduction: Cleaning and exploring the dataset</ins>
 
-# In[1]:
+# In[2]:
 
 
 import pandas as pd
@@ -24,7 +24,7 @@ import panel as pn
 pn.extension()
 
 
-# In[2]:
+# In[3]:
 
 
 df = pd.read_csv('./csv/Electric_Vehicle_Population_Data.csv')
@@ -40,31 +40,31 @@ df = pd.read_csv('./csv/Electric_Vehicle_Population_Data.csv')
 # 
 # As an example, some of the float columns would make more sense if they are ints, i.e. postal code
 
-# In[3]:
+# In[4]:
 
 
 df['Clean Alternative Fuel Vehicle (CAFV) Eligibility'].unique()
 
 
-# In[4]:
+# In[5]:
 
 
 df['Electric Vehicle Type'].unique()
 
 
-# In[5]:
+# In[6]:
 
 
 df['Make'].unique()
 
 
-# In[6]:
+# In[7]:
 
 
 df['State'].unique()
 
 
-# In[7]:
+# In[8]:
 
 
 df['Clean Alternative Fuel Vehicle (CAFV) Eligibility'].unique()
@@ -72,7 +72,7 @@ df['Clean Alternative Fuel Vehicle (CAFV) Eligibility'].unique()
 
 # Converting columns
 
-# In[8]:
+# In[9]:
 
 
 df['State'] = df['State'].astype('category')
@@ -86,7 +86,7 @@ df['Legislative District'] = df['Legislative District'].astype('Int64')
 
 # Adding extra region column for comparison later
 
-# In[9]:
+# In[10]:
 
 
 north_america = ['TESLA', 'JEEP', 'FORD', 'CHEVROLET', 'RIVIAN', 'CHRYSLER', 'CADILLAC', 'LINCOLN', 'DODGE', 'GMC', 'LUCID', 'FISKER', 'MULLEN AUTOMOTIVE INC.', 'BRIGHTDROP', 'RAM', 'AZURE DYNAMICS', 'WHEEGO ELECTRIC CARS']
@@ -111,7 +111,7 @@ df.head()
 
 # ### Bar Plot of number of EVs for Each Model Year
 
-# In[10]:
+# In[11]:
 
 
 print(df['Make'].nunique())
@@ -146,7 +146,7 @@ textbox = hv.Text(
 
 # ## HeatMap of EVs in Washington State Counties
 
-# In[11]:
+# In[12]:
 
 
 df_wa_counties = df[df['State'] == 'WA']
@@ -163,7 +163,7 @@ heat_map_data.head(20)
 
 
 
-# In[12]:
+# In[13]:
 
 
 # # heat_map_data.index.name = 'County'
@@ -203,7 +203,7 @@ heat_map_data.head(20)
 
 # Violin Plot of Battery Range in each region
 
-# In[13]:
+# In[14]:
 
 
 ## for this one Ill look at all counties, not just in WA
@@ -223,7 +223,7 @@ violin__dot_df = df[df['Electric Range'] > 0]
 # new_df.head(2)
 
 
-# In[14]:
+# In[15]:
 
 
 # plt.figure(figsize=(7, 7))
@@ -248,7 +248,7 @@ violin
 
 # Swarm Plot of battery range v model year
 
-# In[15]:
+# In[16]:
 
 
 ## creating jitter
@@ -275,7 +275,7 @@ scatter
 
 # first starting with origin region selector for barplot
 
-# In[16]:
+# In[17]:
 
 
 select_var_ev_origin = pn.widgets.Select(
@@ -289,7 +289,7 @@ select_var_ev_origin = pn.widgets.Select(
 
 # next lets create a function to produce a barplot depending on the selector
 
-# In[17]:
+# In[33]:
 
 
 def create_barplot(ev_origin):
@@ -309,8 +309,8 @@ def create_barplot(ev_origin):
                                         title='Number of Registered EVs in WA Per Model Year',
                                         logy=True).opts(
                                             show_grid=True,
-                                            xlim=(min(df['Model Year']), max(df['Model Year'])),
-                                            ylim=(miny, maxy)
+                                            xlim=(min(df['Model Year']) - 2, max(df['Model Year']) + 2),
+                                            ylim=(2, maxy)
                                         )
 
     textbox = hv.Text(
@@ -327,7 +327,7 @@ def create_barplot(ev_origin):
 
 # binding together
 
-# In[18]:
+# In[34]:
 
 
 interactive_bar_plot = pn.bind(create_barplot, ev_origin=select_var_ev_origin)
@@ -335,7 +335,7 @@ interactive_bar_plot = pn.bind(create_barplot, ev_origin=select_var_ev_origin)
 
 # show the dashboard thus far
 
-# In[19]:
+# In[20]:
 
 
 # dashboard = pn.Column(
@@ -347,7 +347,7 @@ interactive_bar_plot = pn.bind(create_barplot, ev_origin=select_var_ev_origin)
 
 # Moving onto Heatmap selector
 
-# In[20]:
+# In[21]:
 
 
 year_range_slider = pn.widgets.RangeSlider(
@@ -360,7 +360,7 @@ year_range_slider = pn.widgets.RangeSlider(
 
 # function to produce heatmap
 
-# In[21]:
+# In[22]:
 
 
 df_wa_counties_2 = df[df['State'] == 'WA']
@@ -370,7 +370,7 @@ df_top_10_counties_ev_wa = df_top_10_counties_ev_wa.reset_index(inplace=False)
 df_wa_counties_new = df_wa_counties_2[df_wa_counties_2['County'].isin(df_top_10_counties_ev_wa['County'])]
 
 
-# In[22]:
+# In[23]:
 
 
 def create_heatmap(year_range):
@@ -409,13 +409,13 @@ def create_heatmap(year_range):
     
 
 
-# In[23]:
+# In[24]:
 
 
 interactive_heatmap = pn.bind(create_heatmap, year_range=year_range_slider)
 
 
-# In[24]:
+# In[25]:
 
 
 # dashboard2 = pn.Column(
@@ -427,13 +427,13 @@ interactive_heatmap = pn.bind(create_heatmap, year_range=year_range_slider)
 
 # next violin plot
 
-# In[25]:
+# In[26]:
 
 
 violin__dot_df = df[df['Electric Range'] > 0]
 
 
-# In[26]:
+# In[27]:
 
 
 def create_violin_plot(year_range):
@@ -447,7 +447,7 @@ def create_violin_plot(year_range):
                  )
 
 
-# In[27]:
+# In[28]:
 
 
 interactive_violin = pn.bind(create_violin_plot, year_range=year_range_slider)
@@ -461,7 +461,7 @@ interactive_violin = pn.bind(create_violin_plot, year_range=year_range_slider)
 
 # finally the jittered dot plot
 
-# In[28]:
+# In[29]:
 
 
 ## creating jitter
@@ -472,7 +472,7 @@ violin__dot_df['Electric Vehicle Type Code'] = violin__dot_df['Electric Vehicle 
 violin__dot_df['Jitter'] = violin__dot_df['Electric Vehicle Type Code'] + np.random.normal(0, 0.05, len(violin__dot_df))
 
 
-# In[29]:
+# In[30]:
 
 
 miny = -5
@@ -492,7 +492,7 @@ def create_dot_plot(ev_origin):
                                             )
 
 
-# In[30]:
+# In[31]:
 
 
 interactive_dot = pn.bind(create_dot_plot, ev_origin=select_var_ev_origin)
@@ -506,7 +506,7 @@ interactive_dot = pn.bind(create_dot_plot, ev_origin=select_var_ev_origin)
 
 # ## Dashboard final
 
-# In[ ]:
+# In[35]:
 
 
 dashboard_final = pn.Column(
